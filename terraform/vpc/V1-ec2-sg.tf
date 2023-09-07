@@ -19,12 +19,23 @@ resource "aws_security_group" "demo-sg" {
      name = "demo-sg"
      description = "ssh accesses"
      vpc_id = aws_vpc.demo_vpc.id
+
+
      ingress {
         description = "TLS from vpc"
         from_port = 22
         to_port = 22
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"] 
+
+    ingress {
+        description = "jenkins port"
+        from_port = 8080
+        to_port = 8080
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"] 
+
+    
      }
      egress {
         from_port = 0
@@ -88,5 +99,16 @@ resource "aws_route_table_association" "demo-rta-public-subnet-02" {
     route_table_id = aws_route_table.demo_public-rt.id
 }
 
+module "sgs" {
+    source = "../sg_eks"
+    vpc_id     =     aws_vpc.demo_vpc.id
+  }
+
+  module "eks" {
+      source = "../eks"
+       vpc_id     =     aws_vpc.demo_vpc.id
+       subnet_ids = [aws_subnet.demo-public-subnet-01.id,aws_subnet.demo-public-subnet-02.id]
+      sg_ids = module.sgs.security_group_public
+  }
 
 
