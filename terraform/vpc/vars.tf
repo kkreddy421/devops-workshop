@@ -7,5 +7,5 @@ variable "instance_type" {
 variable "tag_name" {
   description = "Instance types for each instance"
   type        = list(string)
-  default     = ["jenkins", "slave", "ansible"]
+  default     = ["jenkins-master", "jenkins-slave", "ansible"]
 }
